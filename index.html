@@ -171,9 +171,8 @@ a{color:inherit;text-decoration:none}
 .card{background:var(--paper);padding:20px;display:flex;flex-direction:column;gap:14px;min-height:280px;transition:background .2s;width:100%}
 .card:hover,.card[aria-expanded="true"]{background:var(--fill)}
 .card-top{display:flex;justify-content:space-between;align-items:baseline}
-.tile{height:132px;display:flex;align-items:center;justify-content:center;transition:height .3s ease}
+.tile{height:132px;display:flex;align-items:center;justify-content:center}
 .tile svg{height:100%;color:var(--ink);opacity:.88}
-.card[aria-expanded="true"] .tile{height:52px}
 .card-name{font-weight:500;font-size:17px;text-transform:uppercase;letter-spacing:.01em}
 .card-feel{color:var(--muted);font-size:12.5px;margin-top:-8px}
 .card-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -182,8 +181,17 @@ a{color:inherit;text-decoration:none}
 .tiergrid{grid-template-columns:repeat(3,1fr)}
 @media(max-width:780px){.tiergrid{grid-template-columns:1fr}}
 
-.detail{grid-column:1/-1;background:var(--paper);max-height:0;overflow:hidden;transition:max-height .4s ease;padding-inline:clamp(20px,4vw,44px)}
-.detail.open{max-height:1200px}
+.detail{
+  grid-column:1/-1;background:var(--paper);max-height:0;overflow:hidden;
+  transition:max-height .4s ease, background .4s ease;
+  padding-inline:clamp(20px,4vw,44px);
+  /* the ground is now a fragrance hue, so the greys are re-pointed:
+     --muted would fall under 4.5:1 and --line/--fill read as dirt on colour */
+  --muted:#3F3F3F;
+  --line:rgba(20,20,20,.18);
+  --fill:rgba(255,255,255,.55);
+}
+.detail .dart{background:var(--paper)}
 .detail-in{display:grid;grid-template-columns:.85fr 1fr 1fr;gap:clamp(24px,3.5vw,52px);padding:clamp(28px,4vw,46px) 0}
 @media(max-width:1000px){.detail-in{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.detail-in{grid-template-columns:1fr;gap:30px}}
@@ -660,21 +668,36 @@ const drawer = document.createElement('div');
 drawer.className = 'detail';
 grid.appendChild(drawer);
 
-const cols = () => getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+/* the raw hue is a touch strong as a full-width ground, so mix it toward
+   white before using it behind the detail panel */
+function soften(hex){
+  const n = parseInt(hex.slice(1), 16), k = 0.62;
+  const ch = i => Math.round(((n >> i) & 255) * k + 255 * (1 - k));
+  return 'rgb(' + ch(16) + ',' + ch(8) + ',' + ch(0) + ')';
+}
+
+function sizeDrawer(){
+  if(drawer.classList.contains('open') && drawer.firstElementChild){
+    drawer.style.maxHeight = drawer.firstElementChild.offsetHeight + 'px';
+  }
+}
+window.addEventListener('resize', () => {
+  clearTimeout(sizeDrawer.t);
+  sizeDrawer.t = setTimeout(sizeDrawer, 120);
+});
 
 function closeAll(){
   openId = null;
   grid.querySelectorAll('.card').forEach(c => c.setAttribute('aria-expanded','false'));
   drawer.classList.remove('open');
+  drawer.style.maxHeight = '0px';
 }
 
 function openCard(id){
-  const p = P.find(x => x.id === id), idx = P.indexOf(p);
+  const p = P.find(x => x.id === id);
   if(openId === id){ closeAll(); return; }
 
-  const n = cols();
-  const endOfRow = Math.min(Math.floor(idx/n)*n + n - 1, P.length - 1);
-  grid.querySelector('.card[data-id="' + P[endOfRow].id + '"]').after(drawer);
+  grid.appendChild(drawer);          // always beneath all eight
 
   closeAll();
   openId = id;
@@ -741,7 +764,17 @@ function openCard(id){
   drawer.querySelector('[data-sample]').onclick = () => window.__pick && window.__pick(p.id);
   drawer.querySelector('[data-label]').onclick = () => setLabel(p);
 
+  drawer.style.background = soften(p.hue);
   drawer.classList.add('open');
+  sizeDrawer();
+
+  requestAnimationFrame(() => {
+    const r = drawer.getBoundingClientRect();
+    if(r.top > window.innerHeight - 140){
+      const soft = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({top: r.top + window.pageYOffset - 150, behavior: soft ? 'smooth' : 'auto'});
+    }
+  });
 }
 
 /* ---- tier overview ---- */
