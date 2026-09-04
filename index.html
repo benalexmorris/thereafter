@@ -795,7 +795,64 @@ P.forEach(p => {
   picks.appendChild(b);
 });
 
-document.getElementById('send').onclick = () => document.getElementById('thanks').classList.add('show');
+/* ---- email delivery ----------------------------------------------------
+   This is a static page, so it cannot send mail itself. Submissions POST to
+   FormSubmit, which forwards them to INBOX. No account is needed, but the
+   FIRST submission triggers a one-off confirmation email to INBOX containing
+   a link that must be clicked; nothing is forwarded until it is. The address
+   appears in page source below - once the form is activated, FormSubmit
+   gives you a hashed endpoint you can swap in here to keep it out of public
+   view. */
+const INBOX = 'benalexmorris@gmail.com';
+const ENDPOINT = 'https://formsubmit.co/ajax/' + INBOX;
+
+function postForm(subject, fields){
+  return fetch(ENDPOINT, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', Accept: 'application/json'},
+    body: JSON.stringify(Object.assign({_subject: subject, _template: 'table'}, fields))
+  }).then(r => {
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    return r.json();
+  });
+}
+
+function busy(btn, on, idle){
+  btn.disabled = on;
+  btn.style.opacity = on ? '.55' : '';
+  btn.textContent = on ? 'Sending\u2026' : idle;
+}
+
+const sendBtn = document.getElementById('send'), thanks = document.getElementById('thanks');
+sendBtn.onclick = () => {
+  const name = document.getElementById('n').value.trim();
+  const email = document.getElementById('e').value.trim();
+  const address = document.getElementById('a').value.trim();
+  const when = document.getElementById('d').value.trim();
+
+  if(!chosen.size || !name || !email || !address){
+    thanks.innerHTML = '<b>Not quite</b><p>Choose up to three samples, then add your name, email and postal address.</p>';
+    thanks.classList.add('show');
+    return;
+  }
+  busy(sendBtn, true, 'Send my samples');
+  postForm('Sample request \u2014 ' + name, {
+    Request: 'Free samples',
+    Name: name,
+    Email: email,
+    'Postal address': address,
+    'Wedding date': when || 'Not given',
+    Samples: [...chosen].map(id => label(P.find(p => p.id === id))).join(', ')
+  }).then(() => {
+    thanks.innerHTML = '<b>On their way</b><p>Check your post in a few days. If nothing lands by the end of next week, reply to the email and we\u2019ll send another set.</p>';
+  }).catch(err => {
+    console.error(err);
+    thanks.innerHTML = '<b>That didn\u2019t send</b><p>Something went wrong at our end. Email ' + INBOX + ' directly and we\u2019ll sort it out.</p>';
+  }).then(() => {
+    busy(sendBtn, false, 'Send my samples');
+    thanks.classList.add('show');
+  });
+};
 
 /* ---- moodboard intake ---- */
 const pinDrop = document.getElementById('pindrop'), pinFiles = document.getElementById('pinfiles');
@@ -815,12 +872,31 @@ pinFiles.onchange = () => {
     pinDrop.textContent = pinCount + ' image' + (pinCount > 1 ? 's' : '') + ' ready';
   }
 }));
-document.getElementById('pinsend').onclick = () => {
+const pinSend = document.getElementById('pinsend');
+pinSend.onclick = () => {
   const link = document.getElementById('pin').value.trim();
-  pinLine.textContent = (link || pinCount)
-    ? 'A perfumer will look through this and come back inside a day with a fragrance and the reasoning behind it.'
-    : 'Add a board link or a few images first and we\u2019ll take a look.';
-  pinDone.classList.add('show');
+  if(!link && !pinCount){
+    pinDone.querySelector('b').textContent = 'Not quite';
+    pinLine.textContent = 'Add a board link or a few images first and we\u2019ll take a look.';
+    pinDone.classList.add('show');
+    return;
+  }
+  busy(pinSend, true, 'Send it over');
+  postForm('Moodboard', {
+    Request: 'Moodboard',
+    'Board link': link || 'None given',
+    Images: pinCount ? pinCount + ' chosen (not attached \u2014 ask the sender for them)' : 'None'
+  }).then(() => {
+    pinDone.querySelector('b').textContent = 'Received';
+    pinLine.textContent = 'A perfumer will look through this and come back inside a day with a fragrance and the reasoning behind it.';
+  }).catch(err => {
+    console.error(err);
+    pinDone.querySelector('b').textContent = 'That didn\u2019t send';
+    pinLine.textContent = 'Something went wrong at our end. Email ' + INBOX + ' directly and we\u2019ll sort it out.';
+  }).then(() => {
+    busy(pinSend, false, 'Send it over');
+    pinDone.classList.add('show');
+  });
 };
 
 </script>
