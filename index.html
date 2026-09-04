@@ -268,10 +268,22 @@ a{color:inherit;text-decoration:none}
 .slot[aria-pressed="true"]{border-color:var(--ink);background:var(--fill)}
 .cols2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,72px)}
 @media(max-width:860px){.cols2{grid-template-columns:1fr}}
-.picks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.pick{border:1px solid var(--line);padding:8px 13px;display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;transition:border-color .18s,background .18s}
-.pick:hover{border-color:var(--ink)}
-.pick[aria-pressed="true"]{border-color:var(--ink);background:var(--fill)}
+.picks{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);margin-top:8px;
+}
+@media(max-width:560px){.picks{grid-template-columns:1fr}}
+.pick{
+  background:var(--paper);width:100%;padding:14px 16px;
+  display:flex;align-items:center;gap:14px;text-align:left;
+  font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  transition:background .18s,color .18s;
+}
+.pick:hover{background:var(--fill)}
+.pick[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.pick-art{flex:none;width:34px;height:34px;display:flex;align-items:center;justify-content:center}
+.pick-art svg{width:100%;height:100%;opacity:.88}
+.pick-name{flex:1}
 .dot{width:16px;height:5px;flex:none}
 
 /* ---------- footer ---------- */
@@ -847,7 +859,10 @@ window.__pick = id => toggle(id, true);
 P.forEach(p => {
   const b = document.createElement('button');
   b.className = 'pick'; b.setAttribute('aria-pressed','false');
-  b.innerHTML = '<span class="dot" style="background:' + p.hue + '"></span>' + label(p);
+  b.innerHTML =
+    '<span class="pick-art">' + svgFor(p.id) + '</span>' +
+    '<span class="pick-name">' + label(p) + '</span>' +
+    '<span class="dot" style="background:' + p.hue + '"></span>';
   b.onclick = () => toggle(p.id);
   pickBtns[p.id] = b;
   picks.appendChild(b);
