@@ -183,7 +183,7 @@ a{color:inherit;text-decoration:none}
 
 .detail{
   grid-column:1/-1;background:var(--paper);max-height:0;overflow:hidden;
-  transition:max-height .4s ease, background .4s ease;
+  transition:max-height .4s ease, background .28s ease;
   padding-inline:clamp(20px,4vw,44px);
   /* the ground is now a fragrance hue, so the greys are re-pointed:
      --muted would fall under 4.5:1 and --line/--fill read as dirt on colour */
@@ -192,6 +192,8 @@ a{color:inherit;text-decoration:none}
   --fill:rgba(255,255,255,.55);
 }
 .detail .dart{background:var(--paper)}
+.detail-in{transition:opacity .18s ease}
+.detail.swapping .detail-in{opacity:0}
 .detail-in{display:grid;grid-template-columns:.85fr 1fr 1fr;gap:clamp(24px,3.5vw,52px);padding:clamp(28px,4vw,46px) 0}
 @media(max-width:1000px){.detail-in{grid-template-columns:1fr 1fr}}
 @media(max-width:700px){.detail-in{grid-template-columns:1fr;gap:30px}}
@@ -689,21 +691,54 @@ window.addEventListener('resize', () => {
 function closeAll(){
   openId = null;
   grid.querySelectorAll('.card').forEach(c => c.setAttribute('aria-expanded','false'));
+  clearTimeout(swapTimer);
+  drawer.classList.remove('swapping');
   drawer.classList.remove('open');
   drawer.style.maxHeight = '0px';
 }
+
+let swapTimer = null;
+const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function openCard(id){
   const p = P.find(x => x.id === id);
   if(openId === id){ closeAll(); return; }
 
+  const swapping = drawer.classList.contains('open');
   grid.appendChild(drawer);          // always beneath all eight
 
-  closeAll();
   openId = id;
-  grid.querySelector('.card[data-id="' + id + '"]').setAttribute('aria-expanded','true');
+  grid.querySelectorAll('.card').forEach(c => c.setAttribute('aria-expanded', String(c.dataset.id === id)));
   setScene(p);
 
+  if(swapping){
+    /* One is already open, so swap the contents in place: no collapsing to
+       zero and back, and no scrolling - the panel is already in front of the
+       reader, and moving the page under them is what looked wrong. */
+    clearTimeout(swapTimer);
+    if(reducedMotion()){ paintDrawer(p); sizeDrawer(); return; }
+    drawer.classList.add('swapping');
+    swapTimer = setTimeout(() => {
+      paintDrawer(p);
+      sizeDrawer();
+      drawer.classList.remove('swapping');
+    }, 150);
+    return;
+  }
+
+  paintDrawer(p);
+  drawer.classList.add('open');
+  sizeDrawer();
+
+  requestAnimationFrame(() => {
+    const r = drawer.getBoundingClientRect();
+    if(r.top > window.innerHeight - 140){
+      window.scrollTo({top: r.top + window.pageYOffset - 150, behavior: reducedMotion() ? 'auto' : 'smooth'});
+    }
+  });
+}
+
+function paintDrawer(p){
   drawer.innerHTML =
     '<div class="detail-in">' +
       '<div>' +
@@ -765,16 +800,6 @@ function openCard(id){
   drawer.querySelector('[data-label]').onclick = () => setLabel(p);
 
   drawer.style.background = soften(p.hue);
-  drawer.classList.add('open');
-  sizeDrawer();
-
-  requestAnimationFrame(() => {
-    const r = drawer.getBoundingClientRect();
-    if(r.top > window.innerHeight - 140){
-      const soft = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      window.scrollTo({top: r.top + window.pageYOffset - 150, behavior: soft ? 'smooth' : 'auto'});
-    }
-  });
 }
 
 /* ---- tier overview ---- */
