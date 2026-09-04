@@ -113,8 +113,36 @@ a{color:inherit;text-decoration:none}
 .sec-head{display:flex;gap:28px;align-items:flex-start;flex-wrap:wrap;margin-bottom:34px}
 .sec-head h2{font-size:clamp(22px,3.1vw,36px);text-transform:uppercase}
 .sec-head p{color:var(--muted);max-width:50ch}
-.sec-num{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;color:var(--muted);min-width:56px;padding-top:6px}
-.sec-body{flex:1;min-width:260px}
+.sec-num{
+  order:2;flex:none;text-align:right;white-space:nowrap;padding-top:6px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;color:var(--muted);
+}
+.sec-body{order:1;flex:1 1 260px;min-width:0}
+@media(max-width:700px){
+  .sec-num{order:0;flex-basis:100%;text-align:left;padding-top:0}
+  .sec-head{gap:14px}
+}
+
+/* ---------- what we do ---------- */
+.sec-tight{padding:clamp(32px,4vw,56px) 0}
+.how{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:900px){.how{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.how{grid-template-columns:1fr}}
+.how-item{background:var(--paper);padding:22px 20px}
+.how-item i{
+  display:block;font-style:normal;margin-bottom:16px;
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;color:var(--muted);
+}
+.how-item b{display:block;font-weight:500;text-transform:uppercase;letter-spacing:.02em;font-size:13px;margin-bottom:8px}
+.how-item span{display:block;color:var(--muted);font-size:12.5px;line-height:1.55}
+.how-note{margin-top:22px;color:var(--muted);font-size:12.5px;max-width:64ch}
+
+/* ---------- consultation (compact) ---------- */
+.consult{display:flex;gap:clamp(22px,4vw,56px);align-items:flex-start;flex-wrap:wrap}
+.consult-copy{flex:1 1 280px;max-width:44ch;color:var(--muted);font-size:13px}
+.consult-form{flex:1 1 340px}
+.consult-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.consult-row .field{margin-top:0;flex:1 1 150px}
 
 /* ---------- credentials ---------- */
 .creds{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
@@ -138,6 +166,9 @@ a{color:inherit;text-decoration:none}
 .card-feel{color:var(--muted);font-size:12.5px;margin-top:-8px}
 .card-foot{margin-top:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}
 .hue{width:26px;height:6px;flex:none}
+
+.tiergrid{grid-template-columns:repeat(3,1fr)}
+@media(max-width:780px){.tiergrid{grid-template-columns:1fr}}
 
 .detail{grid-column:1/-1;background:var(--paper);max-height:0;overflow:hidden;transition:max-height .4s ease;padding-inline:clamp(20px,4vw,44px)}
 .detail.open{max-height:1200px}
@@ -283,6 +314,37 @@ a{color:inherit;text-decoration:none}
   </div>
 </header>
 
+<section class="sec sec-tight" id="what">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">01 / What We Do</div>
+      <div class="sec-body">
+        <h2>What we do</h2>
+        <p style="margin-top:14px">You choose one of eight fragrances, and you choose how far through the day it runs. We blend it the week of the wedding, put your names on every label, and post it to you. There is no boutique and no appointment.</p>
+      </div>
+    </div>
+    <div class="how">
+      <div class="how-item">
+        <i>01</i><b>Choose a fragrance</b>
+        <span>Eight of them, each named for the number of raw materials in it. Free samples in the post first, if you would rather smell before deciding.</span>
+      </div>
+      <div class="how-item">
+        <i>02</i><b>Choose how far it runs</b>
+        <span>Three tiers. The formula is identical in all three &mdash; only its reach changes, from the ceremony room to the favours to the invitations.</span>
+      </div>
+      <div class="how-item">
+        <i>03</i><b>We blend it that week</b>
+        <span>Batched the week of the wedding and labelled with your names, the place and the date. Nothing sits on a shelf for a year first.</span>
+      </div>
+      <div class="how-item">
+        <i>04</i><b>It arrives ready to use</b>
+        <span>Diffusion, room mists and a placement plan drawn up for your venue. No naked flame, no spray, no residue.</span>
+      </div>
+    </div>
+    <p class="how-note">It works the same for a birthday, an anniversary or a christening. A wedding is simply where it gets used most.</p>
+  </div>
+</section>
+
 <section class="sec">
   <div class="wrap">
     <div class="creds">
@@ -297,7 +359,7 @@ a{color:inherit;text-decoration:none}
 <section class="sec" id="eight">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">01 / The Eight</div>
+      <div class="sec-num">02 / The Eight</div>
       <div class="sec-body">
         <h2>Named for what's in them</h2>
         <p style="margin-top:14px">Chapel holds seven raw materials. Ember holds thirty-one. The number is the formula, not a marketing device. Open any of them to read what's inside and decide how far through the day it runs.</p>
@@ -310,7 +372,7 @@ a{color:inherit;text-decoration:none}
 <section class="sec" id="label">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">02 / Label</div>
+      <div class="sec-num">03 / Label</div>
       <div class="sec-body"><h2>Your names on every bottle</h2></div>
     </div>
     <div class="perso">
@@ -339,20 +401,20 @@ a{color:inherit;text-decoration:none}
 <section class="sec" id="tiers">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">03 / Tiers</div>
+      <div class="sec-num">04 / Tiers</div>
       <div class="sec-body">
         <h2>Three tiers, one formula</h2>
         <p style="margin-top:14px">The scent is identical across all three. Only its reach changes.</p>
       </div>
     </div>
-    <div class="grid" style="grid-template-columns:repeat(3,1fr)" id="tiergrid"></div>
+    <div class="grid tiergrid" id="tiergrid"></div>
   </div>
 </section>
 
 <section class="sec" id="moodboard">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">04 / Moodboard</div>
+      <div class="sec-num">05 / Moodboard</div>
       <div class="sec-body"><h2>Show us the wedding, we'll find the scent</h2></div>
     </div>
     <div class="cols2">
@@ -373,26 +435,21 @@ a{color:inherit;text-decoration:none}
   </div>
 </section>
 
-<section class="sec" id="consult">
+<section class="sec sec-tight" id="consult">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">05 / Consultation</div>
+      <div class="sec-num">06 / Consultation</div>
       <div class="sec-body"><h2>Twenty minutes, on a call, free</h2></div>
     </div>
-    <div class="cols2">
-      <div>
-        <p>If you'd rather talk it through than click through, book a video consultation. We'll ask about the venue, the season, the guest list and the dog, then narrow eight fragrances to two and post you both.</p>
-        <p style="margin-top:14px;color:var(--muted)">No boutique. No appointment in London. No obligation to book anything afterwards.</p>
-      </div>
-      <div>
-        <p class="lab">Choose a day</p>
-        <div class="slots" id="days" role="group" aria-label="Choose a day"></div>
-        <p class="lab" style="margin-top:20px">Choose a time</p>
-        <div class="slots" id="times" role="group" aria-label="Choose a time"></div>
-        <div class="field"><label for="bn">Name</label><input id="bn" type="text" autocomplete="name"></div>
-        <div class="field"><label for="be">Email</label><input id="be" type="email" autocomplete="email"></div>
-        <button class="btn" id="book" style="margin-top:18px">Book the call</button>
-        <div class="done" id="bookdone"><b>Booked</b><p id="bookline"></p></div>
+    <div class="consult">
+      <p class="consult-copy">Leave your name and email and we will come back to you to arrange a time that suits. Twenty minutes on a video call &mdash; the venue, the season, the guest list and the dog &mdash; then we narrow eight fragrances to two and post you both. No boutique, no appointment in London, no obligation.</p>
+      <div class="consult-form">
+        <div class="consult-row">
+          <div class="field"><label for="bn">Name</label><input id="bn" type="text" autocomplete="name"></div>
+          <div class="field"><label for="be">Email</label><input id="be" type="email" autocomplete="email"></div>
+        </div>
+        <button class="btn" id="book" style="margin-top:16px">Arrange a call</button>
+        <div class="done" id="bookdone"><b>Got it</b><p id="bookline"></p></div>
       </div>
     </div>
   </div>
@@ -401,7 +458,7 @@ a{color:inherit;text-decoration:none}
 <section class="sec" id="samples">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">06 / Samples</div>
+      <div class="sec-num">07 / Samples</div>
       <div class="sec-body">
         <h2>Three samples, free, in the post</h2>
         <p style="margin-top:14px">Scent doesn't survive a screen. Choose up to three.</p>
@@ -489,8 +546,8 @@ const P = [
 
 const TIERS = [
   {n:'I',   name:'The Ceremony',    price:'from \u00a3320', desc:'The ceremony space and the reception room. Diffusion, room mists and a placement plan drawn up for your venue.'},
-  {n:'II',  name:'The Keepsake',    price:'from \u00a3540', desc:'Everything above, plus sixty hand-poured favours in your fragrance, boxed and labelled with your names.'},
-  {n:'III', name:'The Whole Story', price:'from \u00a3780', desc:'Everything above, plus scented invitations \u2014 the fragrance arrives months before the day does, and they recognise it when they walk in.'}
+  {n:'II',  name:'The Keepsake',    price:'from \u00a3540', desc:'Everything from The Ceremony, plus sixty hand-poured favours in your fragrance, boxed and labelled with your names.'},
+  {n:'III', name:'The Whole Story', price:'from \u00a3780', desc:'Everything from The Keepsake, plus scented invitations \u2014 the fragrance arrives months before the day does, and they recognise it when they walk in.'}
 ];
 
 const STR = [
@@ -780,38 +837,14 @@ document.getElementById('pinsend').onclick = () => {
 };
 
 /* ---- consultation ---- */
-const dayBox = document.getElementById('days'), timeBox = document.getElementById('times');
-let pickedDay = null, pickedTime = null;
-
-const fmt = new Intl.DateTimeFormat('en-GB', {weekday:'short', day:'numeric', month:'short'});
-let d = new Date(), added = 0;
-while(added < 5){
-  d = new Date(d.getTime() + 864e5);
-  if(d.getDay() === 0 || d.getDay() === 6) continue;
-  const lbl = fmt.format(d);
-  const b = document.createElement('button');
-  b.className = 'slot'; b.textContent = lbl; b.setAttribute('aria-pressed','false');
-  b.onclick = () => {
-    dayBox.querySelectorAll('.slot').forEach(x => x.setAttribute('aria-pressed','false'));
-    b.setAttribute('aria-pressed','true'); pickedDay = lbl;
-  };
-  dayBox.appendChild(b); added++;
-}
-['10:00','12:30','15:00','17:30','19:00'].forEach(t => {
-  const b = document.createElement('button');
-  b.className = 'slot'; b.textContent = t; b.setAttribute('aria-pressed','false');
-  b.onclick = () => {
-    timeBox.querySelectorAll('.slot').forEach(x => x.setAttribute('aria-pressed','false'));
-    b.setAttribute('aria-pressed','true'); pickedTime = t;
-  };
-  timeBox.appendChild(b);
-});
-
+const bookLine = document.getElementById('bookline'), bookDone = document.getElementById('bookdone');
 document.getElementById('book').onclick = () => {
-  document.getElementById('bookline').textContent = (pickedDay && pickedTime)
-    ? pickedDay + ' at ' + pickedTime + '. A video link is on its way to your inbox, and we\u2019ll post samples of whatever we land on.'
-    : 'Pick a day and a time and we\u2019ll get that link over to you.';
-  document.getElementById('bookdone').classList.add('show');
+  const nm = document.getElementById('bn').value.trim();
+  const em = document.getElementById('be').value.trim();
+  bookLine.textContent = em
+    ? 'We\u2019ll email ' + em + ' within a working day to fix a time that suits' + (nm ? ', ' + nm : '') + '. Samples of whatever we land on go in the post afterwards.'
+    : 'Add an email and we\u2019ll come back to you within a working day to arrange a time.';
+  bookDone.classList.add('show');
 };
 </script>
 </body>
